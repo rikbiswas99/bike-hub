@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axios.js";
 
 export default function Home() {
@@ -24,6 +25,12 @@ export default function Home() {
       <p className="mt-6">
         Backend status: <span className={`font-semibold ${color}`}>{status}</span>
       </p>
+      <Link
+        to="/bikes"
+        className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+      >
+        Explore Bikes
+      </Link>
     </main>
   );
 }

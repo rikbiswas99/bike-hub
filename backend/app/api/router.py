@@ -1,8 +1,9 @@
 """Collects all route files in one place."""
 from fastapi import APIRouter
 
-from app.api.routes import health
+from app.api.routes import bikes, health
 
 api_router = APIRouter()
 api_router.include_router(health.router)
-# Later phases: auth, bikes, listings, recommendations...
+api_router.include_router(bikes.router)
+# Later phases: auth, listings, recommendations...
