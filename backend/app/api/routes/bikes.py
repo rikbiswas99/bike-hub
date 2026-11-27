@@ -45,6 +45,34 @@ def list_categories(db: Session = Depends(get_db)):
     return [r[0] for r in rows]
 
 
+@router.get("/bikes/compare", response_model=List[BikeOut])
+def compare_bikes(
+    ids: str = Query(..., description="2 or 3 bike ids separated by commas, e.g. 1,4,7"),
+    db: Session = Depends(get_db),
+):
+    """Get 2 or 3 bikes in the order you asked for, so they can be compared."""
+    try:
+        id_list = [int(x) for x in ids.split(",") if x.strip()]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="ids must be numbers separated by commas")
+
+    id_list = list(dict.fromkeys(id_list))  # remove duplicates, keep the order
+    if len(id_list) < 2 or len(id_list) > 3:
+        raise HTTPException(status_code=400, detail="Choose 2 or 3 different bikes to compare")
+
+    bikes = (
+        db.query(Bike)
+        .options(joinedload(Bike.brand))
+        .filter(Bike.id.in_(id_list))
+        .all()
+    )
+    found = {bike.id: bike for bike in bikes}
+    missing = [i for i in id_list if i not in found]
+    if missing:
+        raise HTTPException(status_code=404, detail=f"Bike not found: {missing}")
+    return [found[i] for i in id_list]
+
+
 @router.get("/bikes/{bike_id}", response_model=BikeOut)
 def get_bike(bike_id: int, db: Session = Depends(get_db)):
     """Get one bike by its id."""
