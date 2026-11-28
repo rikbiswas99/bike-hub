@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* The navbar is 4rem tall, so full-height pages leave room for it (no extra scrollbar) */
+main.min-h-screen {
+  min-height: calc(100vh - 4rem);
+}
